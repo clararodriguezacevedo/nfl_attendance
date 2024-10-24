@@ -148,7 +148,24 @@ ridge_time = ridge_end_time - ridge_start_time
 regular_scores["precision"]["ridge"] = ridge_score
 regular_scores["time"]["ridge"] = ridge_time
 
-def process_input_data():
+def process_input_data(sample_model, sample_week, sample_home_team, sample_away_team, sample_date, sample_time, sample_pts_win, sample_pts_loss, sample_home_team_previous_year_performance, sample_away_team_previous_year_performance, sample_home_team_current_year_performance, sample_away_team_current_year_performance, sample_home_team_current_sos, sample_away_team_current_sos, sample_weather_condition):
+    print(sample_model,sample_week, sample_home_team, sample_away_team, sample_date, sample_time, sample_pts_win, sample_pts_loss, sample_home_team_previous_year_performance, sample_away_team_previous_year_performance, sample_home_team_current_year_performance, sample_away_team_current_year_performance, sample_home_team_current_sos, sample_away_team_current_sos, sample_weather_condition)
+    # print(st.session_state.week,
+    #       st.session_state.home_team,
+    #       st.session_state.away_team,
+    #       st.session_state.date,
+    #       st.session_state.time,
+    #       st.session_state.pts_win,
+    #       st.session_state.pts_loss,
+    #       st.session_state.home_team_previous_year_performance,
+    #       st.session_state.away_team_previous_year_performance,
+    #       st.session_state.home_team_current_year_performance,
+    #       st.session_state.away_team_current_year_performance,
+    #       st.session_state.home_team_current_sos,
+    #       st.session_state.away_team_current_sos,
+    #       st.session_state.weather_condition)
+
+    # sample_week, sample_home_team, sample_away_team, sample_date, sample_time, sample_pts_win, sample_pts_loss, sample_home_team_previous_year_performance, sample_away_team_previous_year_performance, sample_home_team_current_year_performance, sample_away_team_current_year_performance, sample_home_team_current_sos, sample_away_team_current_sos, sample_weather_condition = st.session_state.week, st.session_state.home_team, st.session_state.away_team, st.session_state.date, st.session_state.time, st.session_state.pts_win, st.session_state.pts_loss, st.session_state.home_team_previous_year_performance, st.session_state.away_team_previous_year_performance, st.session_state.home_team_current_year_performance, st.session_state.away_team_current_year_performance, st.session_state.home_team_current_sos, st.session_state.away_team_current_sos, st.session_state.weather_condition
 
     # Serie de diccionarios para mappear los variables no dadas a partir de las dadas (por ejemplo, el estadio y la ciudad a partir del equipo local)
     days_week = {
@@ -361,13 +378,27 @@ def process_input_data():
         # Volver a calcular sets de entrenamiento y testeo
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-        # Entrenar en el set de entrenamiento
-        lasso_model.fit(X_train, y_train)
+        if sample_model == "Lasso":
+            # Entrenar en el set de entrenamiento
+            lasso_model.fit(X_train, y_train)
 
-        # Predecir en el set de testeo
-        lasso_sample_data_prediction = lasso_model.predict(sample_data)
+            # Predecir en el set de testeo
+            lasso_sample_data_prediction = lasso_model.predict(sample_data)
+            results.append(lasso_sample_data_prediction)
+        elif sample_model == "Ridge":
+            # Entrenar en el set de entrenamiento
+            ridge_model.fit(X_train, y_train)
 
-        results.append(lasso_sample_data_prediction)
+            # Predecir en el set de testeo
+            ridge_sample_data_prediction = ridge_model.predict(sample_data)
+            results.append(ridge_sample_data_prediction)
+        else:
+            # Entrenar en el set de entrenamiento
+            linear_reg_model.fit(X_train, y_train)
+
+            # Predecir en el set de testeo
+            linear_sample_data_prediction = linear_reg_model.predict(sample_data)
+            results.append(linear_sample_data_prediction)
 
     st.session_state.results = np.array(results)
     st.session_state.mean_result = np.mean(results)
@@ -379,26 +410,29 @@ col1.metric("Precision del modelo lineal", str(np.round(linear_reg_score,4)*100)
 col2.metric("Precision del modelo ridge", str(np.round(ridge_score,4)*100)+"%")
 col3.metric("Precision del modelo lasso", str(np.round(lasso_score,4)*100)+"%")
 
-st.header("PRUBEA1")
+st.header("Ingresa datos para realizar una prediccion")
 with st.form("Ingresa datos para realizar una prediccion"):
-    sample_week = st.slider("Semana", 1, 17)
-    sample_home_team = st.text_input("Equipo Local")
-    sample_away_team = st.text_input("Equipo Visitante")
-    sample_date = st.date_input("Fecha")
-    sample_time = st.time_input("Horario")
-    sample_pts_win = st.slider("Puntos del equipo ganador", 0, 100, 100)
-    sample_pts_loss = st.slider("Puntos del equipo perdedor", 0, sample_pts_win-1)
-    sample_home_team_previous_year_performance = st.number_input("Performance del año anterior del equipo local", -10.0, 10.0, 0.0, 0.1, key=0)
-    sample_away_team_previous_year_performance = st.number_input("Performance del año anterior del equipo visitante", -10.0, 10.0, 0.0, 0.1, key=1)
-    sample_home_team_current_year_performance = st.number_input("Performance actual del equipo local", -10.0, 10.0, 0.0, 0.1, key=2)
-    sample_away_team_current_year_performance = st.number_input("Performance actual del equipo visitante", -10.0, 10.0, 0.0, 0.1, key=3)
-    sample_home_team_current_sos = st.number_input("SOS (Strength of schedule) del equipo local", -10.0, 10.0, 0.0, 0.1, key=4)
-    sample_away_team_current_sos = st.number_input("SOS (Strength of schedule) del equipo visitante", -10.0, 10.0, 0.0, 0.1, key=5)
-    sample_weather_condition = st.radio("Clima", ["cloudy", "clear", "snow", "rain"])
+    model = st.selectbox("Modelo de regresion:", ["Lineal", "Lasso", "Ridge"])
+    week = st.slider("Semana", 1, 17)
+    home_team = st.text_input("Equipo Local")
+    away_team = st.text_input("Equipo Visitante")
+    date = st.date_input("Fecha")
+    game_time = st.time_input("Horario")
+    pts_win = st.slider("Puntos del equipo ganador", 0, 100, 100)
+    pts_loss = st.slider("Puntos del equipo perdedor", 0, pts_win)
+    home_team_previous_year_performance = st.number_input("Performance del año anterior del equipo local", -10.0, 10.0, 0.0, 0.1, key=0)
+    away_team_previous_year_performance = st.number_input("Performance del año anterior del equipo visitante", -10.0, 10.0, 0.0, 0.1, key=1)
+    home_team_current_year_performance = st.number_input("Performance actual del equipo local", -10.0, 10.0, 0.0, 0.1, key=2)
+    away_team_current_year_performance = st.number_input("Performance actual del equipo visitante", -10.0, 10.0, 0.0, 0.1, key=3)
+    home_team_current_sos = st.number_input("SOS (Strength of schedule) del equipo local", -10.0, 10.0, 0.0, 0.1, key=4)
+    away_team_current_sos = st.number_input("SOS (Strength of schedule) del equipo visitante", -10.0, 10.0, 0.0, 0.1, key=5)
+    weather_condition = st.radio("Clima", ["cloudy", "clear", "snow", "rain"])
 
-    submitted = st.form_submit_button("Realizar prediccion", on_click=process_input_data)
+    submitted = st.form_submit_button("Realizar prediccion")
 
 if submitted:
+    process_input_data(model, week, home_team, away_team, date, game_time, pts_win, pts_loss, home_team_previous_year_performance, away_team_previous_year_performance, home_team_current_year_performance, away_team_current_year_performance, home_team_current_sos, away_team_current_sos, weather_condition)
     st.metric("Resultado de la prediccion:", str(round(st.session_state.mean_result)) + " personas en asistencia")
     st.dataframe(st.session_state.results)
 
+#  args=(week, home_team, away_team, date, game_time, pts_win, pts_loss, home_team_previous_year_performance, away_team_previous_year_performance, home_team_current_year_performance, away_team_current_year_performance, home_team_current_sos, away_team_current_sos, weather_condition)
