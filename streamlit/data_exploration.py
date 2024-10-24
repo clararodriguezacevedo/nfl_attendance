@@ -21,6 +21,10 @@ tab2.header("Asistencia a los partidos por condicion clilmatica")
 fig1 = px.box(df, y="game_attendance", x="weather_condition")
 tab2.plotly_chart(fig1, x_label="Condicion climatica", y_label="Asistencia por partido")
 
+tab2.header("Asistencia a los partidos por dia de la semana")
+fig1 = px.box(df, y="game_attendance", x="day")
+tab2.plotly_chart(fig1, x_label="Dia de la semana", y_label="Asistencia por partido")
+
 tab2.header("Asistencia a los partidos por equipo local y equipo visitante")
 fig2 = px.density_heatmap(df, x="home_team_name", y="away_team_name", z="game_attendance", histfunc="avg", width=1200, height=700)
 fig2.update_layout(xaxis_title="Equipo local",
