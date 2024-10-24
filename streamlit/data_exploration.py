@@ -19,18 +19,22 @@ tab2.scatter_chart(df, y="game_attendance", x="stadium_name", x_label="Nombre de
 
 tab2.header("Asistencia a los partidos por condicion clilmatica")
 fig1 = px.box(df, y="game_attendance", x="weather_condition")
+fig1.update_layout(xaxis_title="Condicion climatica",
+                  yaxis_title="Asistencia a los partidos",)
 tab2.plotly_chart(fig1, x_label="Condicion climatica", y_label="Asistencia por partido")
 
 tab2.header("Asistencia a los partidos por dia de la semana")
-fig1 = px.box(df, y="game_attendance", x="day")
-tab2.plotly_chart(fig1, x_label="Dia de la semana", y_label="Asistencia por partido")
+fig2 = px.box(df, y="game_attendance", x="day")
+fig2.update_layout(xaxis_title="Dia de la semana",
+                  yaxis_title="Asistencia a los partidos",)
+tab2.plotly_chart(fig2)
 
 tab2.header("Asistencia a los partidos por equipo local y equipo visitante")
-fig2 = px.density_heatmap(df, x="home_team_name", y="away_team_name", z="game_attendance", histfunc="avg", width=1200, height=700)
-fig2.update_layout(xaxis_title="Equipo local",
+fig3 = px.density_heatmap(df, x="home_team_name", y="away_team_name", z="game_attendance", histfunc="avg", width=1200, height=700)
+fig3.update_layout(xaxis_title="Equipo local",
                   yaxis_title="Equipo visitante",)
-fig2.update_xaxes(tickangle=90,tickmode='linear')
-fig2.update_layout(xaxis= dict(type='category', categoryorder = "category ascending"))
-fig2.update_layout(yaxis= dict(type='category', categoryorder = "category ascending"))
-fig2.update_layout(legend_title_text="Asistencia promedio a los partidos")
-tab2.plotly_chart(fig2, use_container_width=False)
+fig3.update_xaxes(tickangle=90,tickmode='linear')
+fig3.update_layout(xaxis= dict(type='category', categoryorder = "category ascending"))
+fig3.update_layout(yaxis= dict(type='category', categoryorder = "category ascending"))
+fig3.update_layout(legend_title_text="Asistencia promedio a los partidos")
+tab2.plotly_chart(fig3, use_container_width=False)
