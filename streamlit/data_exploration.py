@@ -9,7 +9,7 @@ tab1, tab2 = st.tabs(["Explorar la base de datos", "Graficos"])
 
 
 
-tab1.write("Base de datos")
+tab1.header("Base de datos")
 tab1.dataframe(df, column_order=["game_attendance", "stadium_name","stadium_max_capacity","stadium_regular_capacity","home_team_name","away_team_name", "home_city","weather_condition", "year","week","winner","day","date","time","pts_win","pts_loss","home_team_previous_year_performance","away_team_previous_year_performance","home_team_current_year_performance","away_team_current_year_performance","home_team_current_sos","away_team_current_sos"])
 
 
